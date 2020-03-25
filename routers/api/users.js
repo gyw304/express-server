@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+var jwt = require('jsonwebtoken');
+//var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
 
 
 const User = require("../../models/User")
@@ -64,7 +66,14 @@ router.post("/login",(req,res)=>{
 		bcrypt.compare(password, user.password)
 		      .then(isMath => {
 				  if(isMath){
-					  res.json({msg : 'success'})
+					  const rule = {id:user._id,name:user.name};
+					  jwt.sign(rule,"secret",{expiresIn:3600},(err,token)=>{
+						  if(err) throw err;
+						  res.json({
+							  msg : 'success',
+							  token : token
+						  })
+					  })
 				  }else{
 					  return res.status(400).json({msg:'密码错误'})
 				  }
