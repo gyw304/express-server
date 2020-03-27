@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const Validator = require("validator");
 var jwt = require('jsonwebtoken');
 const passport = require("passport");
 
-const User = require("../../models/User")
+const User = require("../../models/User");
 
 
 /* 
@@ -12,6 +13,20 @@ const User = require("../../models/User")
 	@desc   返回json数据
  */
 router.post("/register",(req,res)=>{
+	
+	if(!Validator.isEmail(req.body.email)){
+		return res.json({
+			code : 0,
+			msg : '请输入正确Email格式'
+		})
+	}
+	
+	if(!Validator.isLength(req.body.password,{min:6,max:10})){
+		return res.json({
+			code : 0,
+			msg : '密码必须大于6位并且小于10位'
+		})
+	}
 
 	//查询数据库中是否拥有邮箱
 	User.findOne({email:req.body.email})
@@ -19,7 +34,7 @@ router.post("/register",(req,res)=>{
 			if(user){
 				return res.status(400).json({msg:"邮箱已被注册"})
 			}else{
-								
+			
 				const newUser = new User({
 					name : req.body.name,
 					email: req.body.email,
@@ -48,6 +63,23 @@ router.post("/register",(req,res)=>{
 router.post("/login",(req,res)=>{
 	const email = req.body.email;
 	const password = req.body.password;
+	
+	
+	if(!Validator.isEmail(req.body.email)){
+		return res.json({
+			code : 0,
+			msg : '请输入正确Email格式'
+		})
+	}
+	
+	if(!Validator.isLength(req.body.password,{min:6,max:10})){
+		return res.json({
+			code : 0,
+			msg : '密码必须大于6位并且小于10位'
+		})
+	}
+	
+	
 	User.findOne({email:email})
 		.then(user => {
 			if(!user){
