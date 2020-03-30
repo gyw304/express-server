@@ -7,7 +7,6 @@ const passport = require("passport")
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json())
 
-const users = require("./routers/api/users");
 
 
 
@@ -26,7 +25,8 @@ require('./config/passport')(passport);
 
 
 
-app.use("/api/users",users)
+app.use("/api/users",require("./routers/api/users"));
+app.use("/api/profiles",require("./routers/api/profiles"))
 
 
 
