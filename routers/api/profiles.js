@@ -49,9 +49,6 @@ router.post("/create",passport.authenticate('jwt', { session: false }),(req,res)
 		profile_data.skills = req.body.skills.split(",");
 	}
 	
-	console.log(req.user)
-	
-	
 	Profile.findOne({uid:req.user.id})
 		   .then(profile => {
 			   
@@ -135,7 +132,6 @@ router.post("/del_exp",passport.authenticate('jwt', { session: false }),(req,res
 				profile.experience.splice(index,1)
 			   
 			    profile.save().then(profile => {res.json(profile)}).catch(err => console.log(err))
-			   
 			   
 		   })
 })

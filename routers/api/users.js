@@ -32,7 +32,10 @@ router.post("/register",(req,res)=>{
 	User.findOne({email:req.body.email})
 		.then((user) => {
 			if(user){
-				return res.status(400).json({msg:"邮箱已被注册"})
+				return res.json({
+					code : 0,
+					msg:"邮箱已被注册",
+				})
 			}else{
 			
 				const newUser = new User({
@@ -47,7 +50,11 @@ router.post("/register",(req,res)=>{
 						newUser.password = hash;
 						
 						newUser.save()
-							   .then(user => res.json(user))
+							   .then(user => res.json({
+								   code : 1,
+								   data : user,
+								   msg : '注册成功'
+							   }))
 						       .catch(err => console.log(err))
 					})
 				})
@@ -65,14 +72,14 @@ router.post("/login",(req,res)=>{
 	const password = req.body.password;
 	
 	
-	if(!Validator.isEmail(req.body.email)){
+	if(!Validator.isEmail(email)){
 		return res.json({
 			code : 0,
 			msg : '请输入正确Email格式'
 		})
 	}
 	
-	if(!Validator.isLength(req.body.password,{min:6,max:10})){
+	if(!Validator.isLength(password,{min:6,max:10})){
 		return res.json({
 			code : 0,
 			msg : '密码必须大于6位并且小于10位'
@@ -83,7 +90,10 @@ router.post("/login",(req,res)=>{
 	User.findOne({email:email})
 		.then(user => {
 			if(!user){
-				return res.status(404).json({msg:'用户不存在'})
+				return res.json({
+					code : 0,
+					msg:'用户不存在'
+				})
 			}
 			
 			//密码匹配
@@ -94,12 +104,18 @@ router.post("/login",(req,res)=>{
 						  jwt.sign(rule,require("../../config/config").secretOrKey,{expiresIn:3600},(err,token)=>{
 							  if(err) throw err;
 							  res.json({
-								  msg : 'success',
-								  token : 'Bearer '  + token
+								  code : 1,
+								  data : {
+									  token : 'Bearer '  + token
+								  },
+								  msg : 'success'
 							  })
 						  })
 					  }else{
-						  return res.status(400).json({msg:'密码错误'})
+						  return res.json({
+							  code : 0,
+							  msg:'密码错误'
+						  })
 					  }
 				  })
 			
