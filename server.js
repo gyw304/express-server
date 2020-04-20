@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const url = require('url');
 
 var cors = require("cors"); //  cnpm install cors
 app.use(cors({
@@ -8,7 +9,6 @@ app.use(cors({
 }));
 
 const bodyParser = require("body-parser")
-const passport = require("passport")
 const jwt = require('jsonwebtoken');
 
 
@@ -19,35 +19,26 @@ app.use(bodyParser.json())
 
 
 
-
-
-
 //DB config
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect(require('./config/config').mongoURI);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
 	console.log('=========== mongodb connect ===========')
 });
 
-//passport 初始化
-app.use(passport.initialize());
-require('./config/passport')(passport);
 
-// app.use(function(req, res, next) {
-// 	var url = req.originalUrl;
-// 	console.log(req.headers.authorization)
-// 	if (url != "/api/users/login") {
-// 		console.log('需要验证'+url)
-// 	}
-// 	next();
-// });
-
-
+/* 
+	路由鉴权
+	no_authorization_router : 不鉴权路由配置
+ */
+let no_authorization_router = [
+	'/api/users/login',
+	'/api/users/register'
+];//不鉴权路由配置
 app.use(function(req, res, next) {
-	
-	if (req.url != '/api/users/login' && '/api/users/register') {
+	if (!no_authorization_router.includes(url.parse(req.url).pathname)) {
 		let token = req.headers.authorization;
 		if (token) {
 			jwt.verify(token, require('./config/config').secretOrKey, (err, decoded) => {
@@ -76,7 +67,6 @@ app.use(function(req, res, next) {
 				msg: '当前用户未登录！'
 			})
 		}
-
 	} else {
 		next()
 	}

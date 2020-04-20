@@ -28,7 +28,7 @@ router.get("/", (req, res) => {
 		Profile.findOne({
 				uid: decoded.id
 			})
-			.populate('uid')
+			//.populate('uid')
 			.then((profile) => {
 
 				console.log(profile)
@@ -73,9 +73,6 @@ router.post("/create", (req, res) => {
 			})
 			.then(profile => {
 				if (profile) {
-
-
-
 					return res.json({
 						code: 0,
 						msg: '已经存在用户信息'

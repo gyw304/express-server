@@ -8,6 +8,9 @@ const passport = require("passport");
 const User = require("../../models/User");
 
 
+const request = require('request');
+
+
 /* 
 	$router POST api/users/test
 	@desc   返回json数据
@@ -56,7 +59,7 @@ router.post("/register", (req, res) => {
 						newUser.save()
 							.then(user => res.json({
 								code: 1,
-								data: user,
+								//data: user,
 								msg: '注册成功'
 							}))
 							.catch(err => console.log(err))
@@ -120,7 +123,7 @@ router.post("/login", (req, res) => {
 								code: 1,
 								data: {
 									userInfo: user,
-									token:token
+									token: token
 								},
 								msg: 'success'
 							})
@@ -147,6 +150,4 @@ router.get("/current", (req, res) => {
 		console.log(decoded.id)
 	})
 })
-
-
 module.exports = router
