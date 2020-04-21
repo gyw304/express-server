@@ -36,7 +36,7 @@ db.once('open', function() {
 let no_authorization_router = [
 	'/api/users/login',
 	'/api/users/register'
-];//不鉴权路由配置
+];
 app.use(function(req, res, next) {
 	if (!no_authorization_router.includes(url.parse(req.url).pathname)) {
 		let token = req.headers.authorization;
